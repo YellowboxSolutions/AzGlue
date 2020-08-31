@@ -156,6 +156,7 @@ if ($itgRequest.data.type -contains "organizations" -or
     $itgRequest.data[0].attributes.'organization-id') {
 
     $itgRequest.data = $itgRequest.data | Where-Object {
+        ($DISABLE_ORGLIST_CSV) -or
         ($_.type -eq "organizations" -and $_.id -in $allowedOrgs.ITGlueOrgID) -or
         ($_.attributes.'organization-id' -in $allowedOrgs.ITGlueOrgID)
     }
