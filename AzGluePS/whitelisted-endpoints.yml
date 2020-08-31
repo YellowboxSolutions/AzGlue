@@ -346,3 +346,185 @@ manufacturers:
         name: string
         created-at: datetime
         updated-at: datetime
+
+contacts:
+  endpoints:
+  - /contacts
+  - /contacts/:id
+  - /organizations/:id/relationships/contacts
+  - /organizations/:id/relationships/contacts/:id
+  methods:
+  - DELETE
+  - GET
+  - PATCH
+  - POST
+  allowed_parameters:
+  - filter[contact_type_id]
+  - filter[first_name]
+  - filter[id]
+  - filter[important]
+  - filter[last_name]
+  - filter[organization_id]
+  - filter[primary_email]
+  - filter[psa_id]
+  - filter[psa_integration_type]
+  - filter[title]
+  required_parameters:
+  createbody:
+    data:
+    - id: int
+      type: string
+      attributes:
+        organization-id: int
+        organization-name: string
+        name: string
+        first-name: string
+        last-name: string
+        title: string
+        contact-type-id: int
+        contact-type-name: string
+        location-id: int
+        location-name: string
+        important: string
+        notes: string
+        contact-emails:
+        - value: string
+          primary: bool
+          label-name: string
+        contact-phones:
+        - value: int
+          extension: string
+          primary: bool
+          label-name: string
+          label-type: string
+          formatted-value: (415) 555-2156
+      relationships:
+        attachments:
+          data:
+          - id: int
+            type: string
+  returnbody:
+    data:
+    - id: int
+      type: string
+      attributes:
+        organization-id: int
+        organization-name: string
+        resource-url: string
+        psa-integration: string
+        name: string
+        first-name: string
+        last-name: string
+        title: string
+        contact-type-id: int
+        contact-type-name: string
+        location-id: int
+        location-name: string
+        important: string
+        notes: string
+        created-at: datetime
+        updated-at: datetime
+        contact-emails:
+        - value: string
+          primary: bool
+          label-name: string
+        contact-phones:
+        - value: string
+          extension: string
+          primary: bool
+          label-name: string
+          label-type: string
+          formatted-value: string
+      relationships:
+        attachments:
+          data:
+          - id: int
+            type: string
+      included:
+      - id: int
+        type: string
+        attributes:
+          name: string
+          attachment-file-name: string
+          attachment-content-type: string
+          attachment-file-size: int
+          ext: string
+          viewable: bool
+          download-url: string
+          created-at: datetime
+          updated-at: datetime
+        
+contact_types:
+  endpoints:
+  - /contact_types
+  - /contact_types/:id
+  methods:
+  - GET
+  - PATCH
+  - POST
+  allowed_parameters:
+  - filter[name]
+  required_parameters:
+  createbody:
+    data:
+    - type: string
+      attributes:
+        name: string
+  returnbody:
+    data:
+    - id: int
+      type: string
+      attributes:
+        name: string
+        created-at: datetime
+        updated-at: datetime
+
+locations:
+  endpoints:
+  - /locations
+  - /locations/:id
+  - /organizations/:id/relationships/locations
+  methods:
+  - DELETE
+  - GET
+  - PATCH
+  - POST
+  allowed_parameters:
+  - filter[city]
+  - filter[country_id]
+  - filter[id]
+  - filter[name]
+  - filter[organization_id]
+  - filter[psa_id]
+  - filter[psa_integration_type]
+  - filter[region_id]
+  required_parameters:
+  createbody:
+    data:
+    - type: string
+      attributes:
+        id: int
+  returnbody:
+    data:
+    - id: int
+      type: string
+      attributes:
+        organization-id: int
+        organization-name: string
+        name: string
+        primary: bool
+        address-1: int
+        address-2: string
+        city: string
+        postal-code: int
+        region-id: int
+        region-name: string
+        country-id: int
+        country-name: string
+        phone: int
+        fax: int
+        notes: string
+        created-at: datetime
+        updated-at: datetime
+        formatted-phone: (415) 213-2000
+        formatted-fax: (415) 213-2004
