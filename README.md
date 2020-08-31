@@ -1,10 +1,12 @@
 # AzGlue, a secure API gateway for IT Glue
 
-This project was made by [Kelvin Tegelaar](https://github.com/KelvinTegelaar)'s repo hosted on [KelvinTegelaar/AzGlue](https://github.com/KelvinTegelaar/AzGlue) and originally posted to his on blog [cyberdrain.com](https://www.cyberdrain.com/documenting-with-powershell-handling-it-glue-api-security-and-rate-limiting/).
+This project was made by [Kelvin Tegelaar](https://github.com/KelvinTegelaar)'s repo hosted on [KelvinTegelaar/AzGlue](https://github.com/KelvinTegelaar/AzGlue) and originally posted to his own blog [cyberdrain.com](https://www.cyberdrain.com/documenting-with-powershell-handling-it-glue-api-security-and-rate-limiting/).
 
-The current version is a result of merging Angus Warrens version with many security improvements, and [Anguswarren/AzGlue](https://github.com/AngusWarren/AzGlue) and Kelvin's repo.
+The main version is a result of merging Angus Warrens version with many security improvements, and [Anguswarren/AzGlue](https://github.com/AngusWarren/AzGlue) and Kelvin's repo.
 
-The current release tries to maintain backwards compatibilty with Kelvin's existing gateway and public scripts. In the future, There might be changes that require deeper moditifation of the AzGlue function which does not allow to retain backwards compatbility. 
+The current release tries to maintain backwards compatibility with Kelvin's existing gateway and public scripts. In the future, There might be changes that require deeper modification of the AzGlue function which does not allow to retain backwards compatibility. 
+
+This version has been modified by Chris Jantzen. Per-Organization API Key's have been implemented. Additionally, the structure of the API output has been modified to return data in a more similar matter to how the IT Glue Powershell commands return the data. This allows it to more easily work with existing scripts. 
 
 ### Changes made/planned by [AngusWarren]:
 - [x] Allow local dev, testing and deployment with VSCode's [Azure Functions extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions).
@@ -14,11 +16,17 @@ The current release tries to maintain backwards compatibilty with Kelvin's exist
 - [x] Allow whitelisting specific API endpoints.
 - [x] When relaying requests, allow per-endpoint filtering and validation of:
   - [x] Supported HTTP methods (POST/PATCH/PUT/DELETE).
-  - [x] Query string paramaters.
+  - [x] Query string parameters.
   - [x] Payload data sent to IT Glue.
   - [x] Payload data returned to the client.
 - [x] Move IT Glue API key to Azure Key Vault.
 - [ ] Set up default whitelisted-endpoints.yml file to work with Kelvin Tegelaar's existing scripts.
+
+### Changes made/planned by [chrisjantzen]:
+- [x] Add contacts and locations to the endpoint whitelist.
+- [x] Fix stripped data in deep nested return values due to low depth JSON encoding.
+- [x] Modify script to return data in the same format as the IT Glue Powershell commands.
+- [x] Implement per-client API keys.
 
 ### Goals for second release:
 - [x] Per-client API keys  
@@ -57,7 +65,7 @@ The current release tries to maintain backwards compatibilty with Kelvin's exist
 10. Set up application settings:
     1. Open the Azure portal, open your App Service, open Configuration > Application settings.
     2. Add APIKey_ORG, ITGlueAPIKey & ITGlueURI environmental variables here. 
-    3. If you've got a Key Vault, you can authorise the system managed identity and provide access to the key through the Application settings [using this process](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
+    3. If you've got a Key Vault, you can authorize the system managed identity and provide access to the key through the Application settings [using this process](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
 
 ### Basic usage:
 Once the gateway is deployed to Azure Functions, you can use the standard IT Glue Powershell module to query it.
@@ -96,7 +104,7 @@ After my previous blogs the comment I’ve received most was worries about the A
 
 - The solution needed to be simple and accessible for everyone.
 - The solution needed to have multiple levels of authentication; an API key, IP whitelisting, and organization whitelisting.
-- The solution needed to block requests for all passwords/files/etc for all organisations.
+- The solution needed to block requests for all passwords/files/etc for all organizations.
 - The solution needed to allow some form of handling of the API rate limiting, e.g. repeating a request if it was rate limited.
 - The solution needed to be able to used, without adapting any scripts (except URLs and API codes.)
 - So after some research I decided to use an Azure Function for this. I’ve blogged about Azure Functions before, but the main reason is that running this function in the consumption model will cost us nothing (or next to nothing if you are an extremely heavy user.)
