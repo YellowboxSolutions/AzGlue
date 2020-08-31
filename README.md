@@ -54,7 +54,7 @@ This version has been modified by Chris Jantzen. Per-Organization API Key's have
 ### Basic setup
 1. Install the [Azure Functions extensions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) for VS Code. Also install [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cbash#v2) if you want to test locally.
 2. Copy the local.settings.json.example file, and remove the .example extension. 
-3. Populate the APIKey_ORG, ITGlueAPIKey & ITGlueURI environmental variables here. The API Key must be 14 or more characters. A UUID will work well for this. See the [Multi-Organization Setup](#-multi-organization-setup) section below if you want separate API keys per organization.
+3. Populate the APIKey_ORG, ITGlueAPIKey & ITGlueURI environmental variables here. The API Key must be 14 or more characters. A UUID will work well for this. See the [Multi-Organization Setup](#multi-organization-setup) section below if you want separate API keys per organization.
 4. Copy OrgList.csv.example and remove the .example extension.
 5. Update to match your environment. See the Multi-Organization setup section for more info on configuring this file.
 6. Right click on the "AzGluePS" directory, and select "open with Code".
