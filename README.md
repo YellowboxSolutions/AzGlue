@@ -21,7 +21,7 @@ The current release tries to maintain backwards compatibilty with Kelvin's exist
 - [ ] Set up default whitelisted-endpoints.yml file to work with Kelvin Tegelaar's existing scripts.
 
 ### Goals for second release:
-- [ ] Per-client API keys  
+- [x] Per-client API keys  
 - [ ] System to only returned data relevant to the specific PC making the request.
 
 ### Progress setting up whitelisted-endpoints.yml defaults:
@@ -46,7 +46,7 @@ The current release tries to maintain backwards compatibilty with Kelvin's exist
 ### Basic setup
 1. Install the [Azure Functions extensions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) for VS Code.
 2. Copy the local.settings.json.example file, and remove the .example extension. 
-3. Populate the AzAPIKey, ITGlueAPIKey & ITGlueURI environmental variables here.
+3. Populate the APIKey_ORG, ITGlueAPIKey & ITGlueURI environmental variables here. See the [Multi-Organization Setup](#-multi-organization-setup) section below if you want separate API keys per organization.
 4. Copy OrgList.csv.example and remove the .example extension.
 5. Update to match your environment.
 6. Right click on the "AzGluePS" direction, and select "open with Code"
@@ -56,7 +56,7 @@ The current release tries to maintain backwards compatibilty with Kelvin's exist
 11. Open the App Service in the Azure Portal, and enable a system managed identity from Settings > Identity. 
 10. Set up application settings:
     1. Open the Azure portal, open your App Service, open Configuration > Application settings.
-    2. Add AzAPIKey, ITGlueAPIKey & ITGlueURI environmental variables here. 
+    2. Add APIKey_ORG, ITGlueAPIKey & ITGlueURI environmental variables here. 
     3. If you've got a Key Vault, you can authorise the system managed identity and provide access to the key through the Application settings [using this process](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
 
 ### Basic usage:
@@ -79,6 +79,15 @@ While it's running locally you can use something like this for the Base URI:
 $functionName = "AzGlueForwarder"
 Add-ITGlueBaseUri "http://localhost:7071/api/${functionName}?ResourceURI="
 ```
+
+### Multi-Organization Setup
+If you want a different API Key per organization, use the following setup method:
+1. Edit the local.settings.json file, add an entry for each organization with the API Key as the variable. Name each using the format: **APIKey_*ORG*** (Where ***ORG*** is the name of the organization or an acronym. It should have no spaces or symbols. e.g. "APIKey_HappyFrog")
+2. Edit the OrgList.csv file, add an entry for each organization. 
+   1. The first column should contain the IP that can access this resource.
+   2. The second is the ID of the organization in IT Glue
+   3. The third should match the local.settings.json file. It can be either the organization's name or acronym (e.g. HappyFrog), or the full name of the API Key (e.g. APIKey_HappyFrog).
+3. In the Azure Portal in the application settings, add each API Key that you added in local.settings.json. 
 
 ### Original README
 See https://www.cyberdrain.com/documenting-with-powershell-handling-it-glue-api-security-and-rate-limiting/ for more information.

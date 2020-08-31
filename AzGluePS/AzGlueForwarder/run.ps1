@@ -72,10 +72,13 @@ function Build-Body ($whitelistObj, $sourceObj, $depth) {
 }
 $clientToken = $request.headers.'x-api-key'
 
+# Get a list of all the API Keys. Find the correct API Key if it exists.
+$ApiKeys = (Get-ChildItem env:APIKey_*)
+$ApiKey = $ApiKeys | Where-Object { $_.Value -eq $clientToken }
+
 # Check if the client's API token matches our stored version and that it's not too short.
 # Without this check, a misconfigured environmental variable could allow unauthenticated access.
-# TODO: Set up a unique key per client, with each key linked to an array of org IDs and IP addresses.
-if ($ENV:AzAPIKey.Length -lt 14 -or $clientToken -ne $ENV:AzAPIKey) {
+if (!$ApiKey -or $ApiKey.Value.Length -lt 14 -or $clientToken -ne $ApiKey.Value) {
     ImmediateFailure "401 - API token does not match"
 }
 
@@ -86,12 +89,15 @@ If (-not $DISABLE_ORGLIST_CSV) {
     if (-not $ClientIP -and $request.url.StartsWith("http://localhost:")) {
         $ClientIP = "localtesting"
     }
+    # Get the organization associated with the API key
+    $ApiKeyOrg = ($ApiKey.Name -split '_')[1]
     # Check the client's IP against the IP/org whitelist.
-    $OrgList = import-csv "AzGlueForwarder\OrgList.csv" -delimiter ","
-    $AllowedOrgs = $OrgList | where-object { $_.ip -eq $ClientIP }
+    $OrgList = import-csv ($TriggerMetadata.FunctionDirectory + "\OrgList.csv") -delimiter ","
+    $AllowedOrgs = $OrgList | where-object { $_.ip -eq $ClientIP -and ($_.APIKeyName -eq $ApiKeyOrg -or $_.APIKeyName -eq $ApiKey.Name) }
     if (!$AllowedOrgs) { 
-        ImmediateFailure "No match found in allowed list"
+        ImmediateFailure "401 - No match found in allowed IPs list"
     }
+
 }
 
 ## Whitelisting endpoints & data.
