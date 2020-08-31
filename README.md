@@ -52,32 +52,33 @@ This version has been modified by Chris Jantzen. Per-Organization API Key's have
   - [x] IT-Glue-Unifi-Documentation.ps1
 
 ### Basic setup
-1. Install the [Azure Functions extensions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) for VS Code.
+1. Install the [Azure Functions extensions](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) for VS Code. Also install [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=windows%2Ccsharp%2Cbash#v2) if you want to test locally.
 2. Copy the local.settings.json.example file, and remove the .example extension. 
-3. Populate the APIKey_ORG, ITGlueAPIKey & ITGlueURI environmental variables here. See the [Multi-Organization Setup](#-multi-organization-setup) section below if you want separate API keys per organization.
+3. Populate the APIKey_ORG, ITGlueAPIKey & ITGlueURI environmental variables here. The API Key must be 14 or more characters. A UUID will work well for this. See the [Multi-Organization Setup](#-multi-organization-setup) section below if you want separate API keys per organization.
 4. Copy OrgList.csv.example and remove the .example extension.
-5. Update to match your environment.
-6. Right click on the "AzGluePS" direction, and select "open with Code"
+5. Update to match your environment. See the Multi-Organization setup section for more info on configuring this file.
+6. Right click on the "AzGluePS" directory, and select "open with Code".
 7. Open the "run.ps1" file and press F5. 
 8. Test it locally using the "http://localhost:7071/api/${functionName}?ResourceURI=" URI.
 9. Open the Azure tab on the left, open Functions, click the "Deploy to Function App.." button to create/deploy the app in Azure.
-11. Open the App Service in the Azure Portal, and enable a system managed identity from Settings > Identity. 
-10. Set up application settings:
-    1. Open the Azure portal, open your App Service, open Configuration > Application settings.
-    2. Add APIKey_ORG, ITGlueAPIKey & ITGlueURI environmental variables here. 
+10. Open the Function App in the [Azure Portal](https://portal.azure.com/). (You can find your Function App easily by searching the name you used in the top search bar.)
+11. Set up application settings:
+    1. Open the Azure portal, open your Function App, open Configuration > Application settings.
+    2. Add APIKey_ORG (or your per organization keys), ITGlueAPIKey & ITGlueURI environmental variables here.
     3. If you've got a Key Vault, you can authorize the system managed identity and provide access to the key through the Application settings [using this process](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
+12. Finally, to get your function token, navigate to Functions > App Keys. Copy the "default" key. You will need to use this in the BaseUri (see Basic Usage section below).
 
 ### Basic usage:
 Once the gateway is deployed to Azure Functions, you can use the standard IT Glue Powershell module to query it.
 ```PowerShell
 Import-Module ITGlueAPI
-$functionSite = "ITGlueAzureGateway"
+$functionSite = "ITGlueAzureGateway" # You can get this by navigating to your App Function in the Azure Portal, see the URL on the Overview page
 $functionName = "AzGlueForwarder"
-$functionToken = "long_random_password_generated_by_Azure"
+$functionToken = "default_app_key_generated_by_Azure"
 
 # note that the base Uri should end with the = sign.
 Add-ITGlueBaseUri "https://${functionSite}.azurewebsites.net/api/${functionName}?code=${functionToken}&ResourceURI="
-Add-ITGlueApiKey "random_password_saved_in_functions_environmental_variables"
+Add-ITGlueApiKey "organizations_api_key_saved_in_functions_environmental_variables" # APIKey_ORG
 
 Get-ITGluePasswords -organization_id 1234
 ```
