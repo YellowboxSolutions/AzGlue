@@ -31,11 +31,25 @@ function Build-Body ($whitelistObj, $sourceObj, $depth) {
         # When the whitelist object is a dictionary, loop over the keys and if they exist in the 
         # source object, recurse. Note that any extra keys will not be checked or logged.
         $counter = 0
-        $newObject = @{}
+        $newObject = [pscustomObject]@{}
         foreach ($key in $whitelistObj.keys) {
-            if ($sourceObj.$key) {
+            if (Get-Member -inputobject $sourceObj -name $key -Membertype Properties) {
                 $counter++
-                $newObject[$key] = Build-Body -whitelistObj $whitelistObj[$key] -sourceObj $sourceObj.$key -depth $depth
+                $defaultValue = $null
+				if ($whitelistObj[$key] -eq "bool") {
+					$defaultValue = $false
+				}
+				$newObject | Add-Member -NotePropertyName $key -NotePropertyValue $defaultValue
+                if ($sourceObj.$key) {
+					if ($sourceObj.$key -is [array]) {
+						# forces existing arrays to stay as arrays. Without this, arrays with 1 item get reduced to just that item (not in an array).
+						$newObject.$key = @(Build-Body -whitelistObj $whitelistObj[$key] -sourceObj $sourceObj.$key -depth $depth)
+					} else {
+						$newObject.$key = Build-Body -whitelistObj $whitelistObj[$key] -sourceObj $sourceObj.$key -depth $depth
+					}
+				} elseif (-not $sourceObj.$key) {
+					$newObject.$key = $sourceObj.$key # to keep falsy values
+				}
             }
             Write-Debug ("{0}/{1} keys were whitelisted from the source dictionary." -f $counter, $sourceObj.length)
         }
@@ -47,7 +61,7 @@ function Build-Body ($whitelistObj, $sourceObj, $depth) {
         }
     } elseif ($whitelistObj -is [string]) {
         # When the whitelist object is a string, store the value of the source object and move on.
-        # Mote that if the value is a list/dict, it will still add everything.
+        # Note that if the value is a list/dict, it will still add everything.
         # TODO: Validate source object data types.
         $newObject = $sourceObj
     } else {
@@ -82,7 +96,7 @@ If (-not $DISABLE_ORGLIST_CSV) {
 
 ## Whitelisting endpoints & data.
 Import-Module powershell-yaml -Function ConvertFrom-Yaml
-$endpoints = Get-Content .\whitelisted-endpoints.yml | ConvertFrom-Yaml
+$endpoints = Get-Content -Raw ($TriggerMetadata.FunctionDirectory + "\..\whitelisted-endpoints.yml") | ConvertFrom-Yaml -Ordered
 
 $resourceUri = $request.Query.ResourceURI
 $resourceUri_generic = ([string]$resourceUri).TrimEnd("/") -replace "/\d+","/:id"
@@ -166,9 +180,11 @@ if ($itgRequest.data.type -contains "organizations" -or
 if ($endpoints[$endpointKey].returnbody) {
     $itgReturnBody = Build-Body $endpoints[$endpointKey].returnbody $itgRequest
     if ($itgRequest.meta) {
+        $itgReturnBody | Add-Member -NotePropertyName 'meta' -NotePropertyValue $null
         $itgReturnBody.meta = $itgRequest.meta
     }
     if ($itgRequest.links) {
+        $itgReturnBody | Add-Member -NotePropertyName 'links' -NotePropertyValue $null
         $itgReturnBody.links = $itgRequest.links
     }
 } else {
