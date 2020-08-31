@@ -180,6 +180,6 @@ Write-Verbose ("Response body: {0}" -f ($itgReturnBody | Convertto-Json -Depth 6
 # Return the final object.
 Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
     headers    = @{'content-type' = 'application\json' }
-    StatusCode = [httpstatuscode]::OK
-    Body       = $itgReturnBody
+    StatusCode = [System.Net.HttpStatusCode]::OK
+    Body       = ($itgReturnBody | ConvertTo-Json -Depth 6)
 })
