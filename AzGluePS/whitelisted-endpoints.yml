@@ -58,6 +58,8 @@ organizations:
   - filter[name]
   - filter[organization_type_id]
   - filter[organization_status_id]
+  - filter[created_at]
+  - filter[updated_at]
   - filter[psa_id]
   - sort
   - page[number]
@@ -70,6 +72,11 @@ organizations:
         name: string
         organization-type-id: int
         organization-type-name: string
+        organization-status-id: int
+        organization-status-name: string
+        primary: bool
+        logo: string
+        short-name: string
         updated-at: datetime
         created-at: datetime
 
