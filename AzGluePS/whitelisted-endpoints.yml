@@ -1,3 +1,27 @@
+attachments:
+  endpoints:
+  - /:type/:id/relationships/attachments
+  - /:type/:id/relationships/attachments/:id
+  methods:
+  - DELETE
+  - PATCH
+  - POST
+  allowed_parameters:
+  required_parameters:
+  createbody:
+    data:
+    - type: string
+      attributes:
+        id: int
+        attachment:
+          content: base64file
+          file_name: string
+  returnbody:
+    data:
+    - type: string
+      attributes:
+        id: int
+        
 passwords:
   endpoints:
   - /passwords
