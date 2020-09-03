@@ -104,15 +104,23 @@ If (-not $DISABLE_ORGLIST_CSV) {
 Import-Module powershell-yaml -Function ConvertFrom-Yaml
 $endpoints = Get-Content -Raw ($TriggerMetadata.FunctionDirectory + "\..\whitelisted-endpoints.yml") | ConvertFrom-Yaml -Ordered
 
+$resource_types = @('checklists', 'checklist_templates', 'configurations', 'contacts', 'documents', `
+                    'domains', 'locations', 'passwords', 'ssl_certificates', 'flexible_assets', 'tickets')
+
 $resourceUri = $request.Query.ResourceURI
 $resourceUri_generic = ([string]$resourceUri).TrimEnd("/") -replace "/\d+","/:id"
+$resourceUri_generic_by_type = [string]$resourceUri_generic
+foreach ($type in $resource_types) {
+    $resourceUri_generic_by_type = $resourceUri_generic_by_type -replace "\/$type","/:type"
+}
 
 # Log the body of the request if the debug level is trace. 
 Write-Verbose ("Incoming Body: {0}" -f ($Request.Body|ConvertTo-Json -depth 6))
 
 # Check to see if the called API endpoint & method has been whitelisted.
 foreach ($key in $endpoints.keys) {
-    if ($endpoints[$key].endpoints -contains $resourceUri_generic -and $endpoints[$key].methods -contains $request.Method) {
+    if (($endpoints[$key].endpoints -contains $resourceUri_generic -or $endpoints[$key].endpoints -contains $resourceUri_generic_by_type) -and 
+            $endpoints[$key].methods -contains $request.Method) {
         $endpointKey = $key
         break
     }
