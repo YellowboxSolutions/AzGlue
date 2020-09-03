@@ -149,6 +149,7 @@ flexible_assets:
   - filter[organization_id]
   - page[number]
   - page[size]
+  - include
   required_parameters:
   createbody:
     data:
@@ -207,6 +208,15 @@ flexible_assets:
           network-settings: string
           replication-settings: string
           host-settings: string
+          ### Customer Billing
+          billed-by: string
+          number-of-billed-users: int
+          number-of-billed-computers: int
+          billing-report-user-list:
+            content: base64file
+            file_name: string
+          user-breakdown: string
+          notes: string
   returnbody:
     errors: list
     data:
@@ -214,6 +224,7 @@ flexible_assets:
       type: string
       attributes:
         organization-id: int
+        resource-url: string
         flexible-asset-type-id: int
         name: string
         traits:
@@ -223,6 +234,35 @@ flexible_assets:
           device: int
           name: string
           host-name: string
+          ### Customer Billing
+          billed-by: string
+          number-of-billed-users: int
+          number-of-billed-computers: int
+          billing-report-user-list:
+            content-type: string
+            name: string
+            size: int
+            url: string
+          user-breakdown: string
+          notes: string
+        created-at: datetime
+        updated-at: datetime
+      relationships:
+        attachments:
+          data:
+          - id: int
+            type: string
+    included:
+    - id: int
+      type: string
+      attributes:
+        id: int
+        name: string
+        attachment-file-name: string
+        attachment-content-type: string
+        attachment-file-size: int
+        ext: string
+        download-url: string
         created-at: datetime
         updated-at: datetime
 
@@ -376,6 +416,7 @@ contacts:
   - filter[psa_id]
   - filter[psa_integration_type]
   - filter[title]
+  - include
   required_parameters:
   createbody:
     data:
@@ -447,19 +488,19 @@ contacts:
           data:
           - id: int
             type: string
-      included:
-      - id: int
-        type: string
-        attributes:
-          name: string
-          attachment-file-name: string
-          attachment-content-type: string
-          attachment-file-size: int
-          ext: string
-          viewable: bool
-          download-url: string
-          created-at: datetime
-          updated-at: datetime
+    included:
+    - id: int
+      type: string
+      attributes:
+        id: int
+        name: string
+        attachment-file-name: string
+        attachment-content-type: string
+        attachment-file-size: int
+        ext: string
+        download-url: string
+        created-at: datetime
+        updated-at: datetime
         
 contact_types:
   endpoints:
