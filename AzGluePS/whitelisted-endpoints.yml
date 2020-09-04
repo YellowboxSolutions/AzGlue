@@ -42,6 +42,7 @@ passwords:
   - sort
   - page[number]
   - page[size]
+  - include
   required_parameters:
   - show_passwords: "false"
   createbody:
@@ -115,11 +116,23 @@ configurations:
   - PATCH
   - POST
   allowed_parameters:
+  - filter[id]
   - filter[name]
-  - filter[psa_id]
+  - filter[organization_id]
+  - filter[configuration_type_id]
+  - filter[configuration_status_id]
+  - filter[contact_id]
   - filter[serial_number]
+  - filter[asset_tag]
+  - filter[psa_id]
+  - filter[psa_integration_type]
+  - filter[rmm_id]
+  - filter[rmm_integration_type]
+  - filter[archived]
+  - sort
   - page[number]
   - page[size]
+  - include
   required_parameters:
   createbody:
     data:
@@ -171,6 +184,7 @@ flexible_assets:
   - filter[flexible_asset_type_id]
   - filter[name]
   - filter[organization_id]
+  - sort
   - page[number]
   - page[size]
   - include
@@ -299,8 +313,13 @@ flexible_asset_types:
   - POST
   allowed_parameters:
   - filter[enabled]
+  - filter[icon]
   - filter[id]
   - filter[name]
+  - sort
+  - page[number]
+  - page[size]
+  - include
   required_parameters:
   createbody:
     data:
@@ -350,6 +369,9 @@ configuration_types:
   - POST
   allowed_parameters:
   - filter[name]
+  - sort
+  - page[number]
+  - page[size]
   required_parameters:
   createbody:
     data:
@@ -375,6 +397,7 @@ models:
   - POST
   allowed_parameters:
   - filter[id]
+  - sort
   - page[number]
   - page[size]
   required_parameters:
@@ -403,6 +426,9 @@ manufacturers:
   - POST
   allowed_parameters:
   - filter[name]
+  - sort
+  - page[number]
+  - page[size]
   required_parameters:
   createbody:
     data:
@@ -440,6 +466,9 @@ contacts:
   - filter[psa_id]
   - filter[psa_integration_type]
   - filter[title]
+  - sort
+  - page[number]
+  - page[size]
   - include
   required_parameters:
   createbody:
@@ -536,6 +565,9 @@ contact_types:
   - POST
   allowed_parameters:
   - filter[name]
+  - sort
+  - page[number]
+  - page[size]
   required_parameters:
   createbody:
     data:
@@ -570,6 +602,10 @@ locations:
   - filter[psa_id]
   - filter[psa_integration_type]
   - filter[region_id]
+  - sort
+  - page[number]
+  - page[size]
+  - include
   required_parameters:
   createbody:
     data:
