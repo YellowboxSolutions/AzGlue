@@ -91,7 +91,7 @@ Add-ITGlueBaseUri "http://localhost:7071/api/${functionName}?ResourceURI="
 
 ### Multi-Organization Setup
 If you want a different API Key per organization, use the following setup method:
-1. Edit the local.settings.json file, add an entry for each organization with the API Key as the variable. Name each using the format: **APIKey_*ORG*** (Where ***ORG*** is the name of the organization or an acronym. It should have no spaces or symbols. e.g. "APIKey_HappyFrog")
+1. Edit the local.settings.json file, add an entry for each organization with the API Key as the variable. Name each using the format: **APIKey_*ORG*** (Where ***ORG*** is the name of the organization or an acronym. It should have no spaces or symbols. (e.g. "APIKey_HappyFrog") To make this process easier, you can use this APIKeyGenerator.ps1 script.
 2. Edit the OrgList.csv file, add an entry for each organization. 
    1. The first column should contain the IP that can access this resource.
    2. The second is the ID of the organization in IT Glue
