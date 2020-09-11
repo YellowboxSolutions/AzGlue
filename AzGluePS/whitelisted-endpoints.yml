@@ -171,6 +171,36 @@ configurations:
           data:
           - id: int
             type: string
+          
+domains:
+  endpoints:
+  - /domains
+  - /organizations/:id/relationships/domains
+  methods:
+  - GET
+  allowed_parameters:
+  - filter[id]
+  - filter[organization_id]
+  - sort
+  - page[number]
+  - page[size]
+  - include
+  required_parameters:
+  createbody:
+  returnbody:
+    data:
+    - id: int
+      type: string
+      attributes:
+        organization-id: int
+        organization-name: string
+        resource-url: string
+        name: string
+        screenshot: string
+        registrar-name: string
+        notes: string
+        expires-on: datetime
+        updated-at: datetime
 
 flexible_assets:
   endpoints:
