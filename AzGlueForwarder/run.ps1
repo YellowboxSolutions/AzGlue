@@ -73,6 +73,9 @@ function Build-Body ($whitelistObj, $sourceObj, $depth) {
 $clientToken = $request.headers.'x-api-key'
 
 # Get a list of all the API Keys. Find the correct API Key if it exists.
+# TODO: I have api key in ITG as a password but it is only returned (visible) when querying for the password by its ID
+#       and this script doesn't know the ID of the password. We can probably query by ORG ID with filter_name
+#       and get it, but then we will have to query again to get the password.
 $ApiKeys = (Get-ChildItem env:APIKey_*)
 $ApiKey = $ApiKeys | Where-Object { $_.Value -eq $clientToken }
 
