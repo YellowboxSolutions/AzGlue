@@ -82,24 +82,6 @@ if (!$ApiKey -or $ApiKey.Value.Length -lt 14 -or $clientToken -ne $ApiKey.Value)
     ImmediateFailure "401 - API token does not match"
 }
 
-$DISABLE_ORGLIST_CSV = ($Env:DISABLE_ORGLIST_CSV -and (($Env:DISABLE_ORGLIST_CSV).ToLower() -eq 'true'))
-If (-not $DISABLE_ORGLIST_CSV) {
-    # Get the client's IP address
-    $ClientIP = ($request.headers.'X-Forwarded-For' -split ':')[0]
-    if (-not $ClientIP -and $request.url.StartsWith("http://localhost:")) {
-        $ClientIP = "localtesting"
-    }
-    # Get the organization associated with the API key
-    $ApiKeyOrg = ($ApiKey.Name -split '_')[1]
-    # Check the client's IP against the IP/org whitelist.
-    $OrgList = import-csv ($TriggerMetadata.FunctionDirectory + "\OrgList.csv") -delimiter ","
-    $AllowedOrgs = $OrgList | where-object { $_.ip -eq $ClientIP -and ($_.APIKeyName -eq $ApiKeyOrg -or $_.APIKeyName -eq $ApiKey.Name) }
-    if (!$AllowedOrgs) { 
-        ImmediateFailure "401 - No match found in allowed IPs list"
-    }
-
-}
-
 ## Whitelisting endpoints & data.
 Import-Module powershell-yaml -Function ConvertFrom-Yaml
 $endpoints = Get-Content -Raw ($TriggerMetadata.FunctionDirectory + "\..\whitelisted-endpoints.yml") | ConvertFrom-Yaml -Ordered
