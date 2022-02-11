@@ -112,7 +112,7 @@ foreach ($key in $endpoints.keys) {
     }
 }
 if (-not $endpointKey) {
-    ImmediateFailure "401 - Unauthorized endpoint or method"
+    ImmediateFailure "401 - Unauthorized endpoint or method: $resourceUri"
 }
 
 # Build new query string from required and whitelisted parameters
