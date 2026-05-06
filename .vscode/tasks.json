@@ -3,8 +3,9 @@
 	"tasks": [
 		{
 			"type": "func",
+			"label": "func: host start",
 			"command": "host start",
-			"problemMatcher": "$func-watch",
+			"problemMatcher": "$func-powershell-watch",
 			"isBackground": true
 		}
 	]
