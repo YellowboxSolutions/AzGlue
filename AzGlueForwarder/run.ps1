@@ -90,6 +90,14 @@ if (!$ApiKey -or $ApiKey.Value.Length -lt 14 -or $clientToken -ne $ApiKey.Value)
 Import-Module powershell-yaml -Function ConvertFrom-Yaml
 $endpoints = Get-Content -Raw ($TriggerMetadata.FunctionDirectory + "\..\whitelisted-endpoints.yml") | ConvertFrom-Yaml -Ordered
 
+# Extract profile from key name: APIKey_<Profile>_<Label> gets a named profile; APIKey_<Label> gets Default.
+$keyNameSegments = ($ApiKey.Name -replace '^APIKey_', '') -split '_', 2
+$profileName = if ($keyNameSegments.Count -gt 1) { $keyNameSegments[0] } else { 'Default' }
+if (-not $endpoints['profiles'].ContainsKey($profileName)) {
+    ImmediateFailure "401 - Unknown access profile"
+}
+$clientProfile = $endpoints['profiles'][$profileName]
+
 $resource_types = @('checklists', 'checklist_templates', 'configurations', 'contacts', 'documents', `
                     'domains', 'locations', 'passwords', 'ssl_certificates', 'flexible_assets', 'tickets')
 
@@ -104,7 +112,7 @@ foreach ($type in $resource_types) {
 Write-Verbose ("Incoming Body: {0}" -f ($Request.Body|ConvertTo-Json -depth 6))
 
 # Check to see if the called API endpoint & method has been whitelisted.
-foreach ($key in $endpoints.keys) {
+foreach ($key in ($endpoints.keys | Where-Object { $_ -ne 'profiles' })) {
     if (($endpoints[$key].endpoints -contains $resourceUri_generic -or $endpoints[$key].endpoints -contains $resourceUri_generic_by_type) -and 
             $endpoints[$key].methods -contains $request.Method) {
         $endpointKey = $key
@@ -113,6 +121,17 @@ foreach ($key in $endpoints.keys) {
 }
 if (-not $endpointKey) {
     ImmediateFailure "401 - Unauthorized endpoint or method: $resourceUri"
+}
+
+# Check profile permits this endpoint and method (null profile = Default = full access).
+if ($null -ne $clientProfile) {
+    if ($endpointKey -notin $clientProfile.Keys) {
+        ImmediateFailure "401 - Unauthorized endpoint or method: $resourceUri"
+    }
+    $profileMethods = $clientProfile[$endpointKey]
+    if ($null -ne $profileMethods -and $request.Method -notin $profileMethods) {
+        ImmediateFailure "401 - Unauthorized endpoint or method: $resourceUri"
+    }
 }
 
 # Build new query string from required and whitelisted parameters

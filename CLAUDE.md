@@ -53,9 +53,26 @@ Each resource type entry has:
 - `createbody` — schema whitelist for request body (POST/PATCH)
 - `returnbody` — schema whitelist for response body (controls what data reaches the client)
 
-### Authentication
+### Authentication & Per-Key RBAC
 
-Clients send `x-api-key` in the request header. The function matches it against all `APIKey_*` environment variables. An empty or missing key always fails. Per-org keys are supported by naming env vars `APIKey_<OrgName>`.
+Clients send `x-api-key` in the request header. The function matches it against all `APIKey_*` environment variables. An empty or missing key always fails.
+
+Keys follow the naming convention `APIKey_<Profile>_<Label>` where `<Profile>` maps to a profile defined in the `profiles:` section of `whitelisted-endpoints.yml`. Keys named `APIKey_<Label>` (no profile segment) get the `Default` profile, which grants full access to all whitelisted endpoints.
+
+**Adding a new key:** Add `APIKey_<Profile>_<Label> = <uuid>` to Azure App Settings. No redeployment needed.
+
+**Adding a new profile:** Add a block under `profiles:` in `whitelisted-endpoints.yml` listing allowed endpoint keys and their permitted methods, then redeploy. A `null` profile value means full access.
+
+```yaml
+profiles:
+  Default:          # null = full access to everything in whitelist
+  ReadOnly:
+    organizations: [GET]
+    configurations: [GET]
+  DocumentsNoPasswords:
+    flexible_assets: [GET, POST, PATCH]
+    flexible_asset_types: [GET]
+```
 
 ### Build-Body Function
 
@@ -65,7 +82,7 @@ Clients send `x-api-key` in the request header. The function matches it against 
 
 | Variable | Purpose |
 |----------|---------|
-| `APIKey_ORG` (or `APIKey_<Name>`) | Client API key(s) — at least 14 chars |
+| `APIKey_<Profile>_<Label>` (or `APIKey_<Label>`) | Client API key(s) — at least 14 chars; profile controls RBAC |
 | `ITGlueAPIKey` | The real IT Glue API key (never exposed to clients) |
 | `ITGlueURI` | IT Glue API base URL (e.g. `https://api.itglue.com`) |
 

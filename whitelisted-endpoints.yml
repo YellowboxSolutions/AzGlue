@@ -1,3 +1,21 @@
+profiles:
+  Default:
+  ReadOnly:
+    organizations: [GET]
+    configurations: [GET]
+    contacts: [GET]
+    locations: [GET]
+    domains: [GET]
+    flexible_assets: [GET]
+    flexible_asset_types: [GET]
+    configuration_types: [GET]
+    contact_types: [GET]
+    models: [GET]
+    manufacturers: [GET]
+  DocumentsNoPasswords:
+    flexible_assets: [GET, POST, PATCH]
+    flexible_asset_types: [GET]
+
 attachments:
   endpoints:
   - /:type/:id/relationships/attachments
